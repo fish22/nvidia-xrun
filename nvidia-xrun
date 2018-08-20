@@ -71,11 +71,13 @@ COMMAND="xinit $EXECL -- $NEWDISP vt$LVT -nolisten tcp -br -config nvidia-xorg.c
 
 # --------- TURNING ON GPU -----------
 echo 'Waking up nvidia GPU'
-if ! [ -f /proc/acpi/bbswitch ] 
+if ! [ -f '/sys/devices/pci0000:00/0000:00:01.0/device' ] 
 then
-  execute "sudo modprobe bbswitch"
+  execute "sudo systemctl start nvidia-enable"
+  echo "GPU woken up successfully"
+else
+  echo "GPU already up"
 fi
-execute "sudo tee /proc/acpi/bbswitch <<<ON"
 
 # ---------- LOADING MODULES ----------
 echo 'Loading nvidia module'
@@ -107,13 +109,11 @@ echo 'Unloading nvidia module'
 execute "sudo rmmod nvidia"
 
 # --------- TURNING OFF GPU ----------
-if [ -f /proc/acpi/bbswitch ] 
+if [ -f '/sys/devices/pci0000:00/0000:00:01.0/device' ] 
 then
   echo 'Turning off nvidia GPU'
-  execute "sudo tee /proc/acpi/bbswitch <<<OFF"
-
-  echo -n 'Current state of nvidia GPU: '
-  execute "cat /proc/acpi/bbswitch"
+  execute "sudo systemctl start nvidia-disable"
+  echo -n 'GPU is turned off'
 else
-  echo "Bbswitch kernel module not loaded."
+  echo "Not turning off because GPU appears already off"
 fi

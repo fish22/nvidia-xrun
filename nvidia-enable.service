@@ -1,0 +1,7 @@
+[Unit]
+Description=Enable the NVIDIA card disabled by nvidia-disable.service
+ConditionPathIsReadWrite=/sys/devices/pci0000:00/0000:00:00.0
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 1 > /sys/devices/pci0000:00/0000:00:00.0/rescan'

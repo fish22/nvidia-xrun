@@ -1,0 +1,13 @@
+[Unit]
+Description=Disable NVIDIA card on boot or any other time
+Requires=systemd-udevd.service
+Before=display-manager.service
+After=systemd-udevd.service
+ConditionPathIsReadWrite=/sys/devices/pci0000:00/0000:00:01.0
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 1 > /sys/devices/pci0000:00/0000:00:01.0/remove'
+
+[Install]
+WantedBy=display-manager.service
